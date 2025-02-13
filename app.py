@@ -262,8 +262,10 @@ def get_response(msg):
 
 ############
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 @app.route('/')
 def home():
     return jsonify({'message': 'Flask on Cloud Run is live!'})
