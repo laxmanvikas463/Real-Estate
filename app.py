@@ -270,12 +270,24 @@ CORS(app, resources={r"/*": {"origins": "*"}})  # Enable CORS for all routes
 def home():
     return jsonify({'message': 'Flask on Cloud Run is live!'})
 
-@app.route('/chat', methods=['POST'])
+
+@app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
+    # Handle preflight request
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        return response
+    
+    # Handle POST request
     data = request.get_json()
     message = data.get("message", "")
     response = get_response(message)
-    return jsonify({"response": response})
+    response = jsonify({"response": response})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
