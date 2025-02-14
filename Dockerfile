@@ -1,19 +1,24 @@
-# Use official Python image
-FROM python:3.9-slim
+# Use a specific Python version instead of the latest (this avoids unnecessary rebuilds)
+FROM python:3.12-slim
 
 # Set working directory
 WORKDIR /app
 
-# Copy files
+# Install dependencies first to leverage caching
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of your application
 COPY . .
 
-# Install dependencies
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-RUN python -m nltk.downloader punkt wordnet omw-1.4
+# Set the correct environment variable for Flask
+ENV FLASK_APP=app.py
 
-# Expose the port Flask will run on
+# Install Gunicorn
+RUN pip install gunicorn
+
+# Expose the app port
 EXPOSE 8080
 
-# Run Flask app with Gunicorn
+# Command to run the Flask app
 CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
