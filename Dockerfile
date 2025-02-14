@@ -16,4 +16,4 @@ RUN python -m nltk.downloader punkt wordnet omw-1.4
 EXPOSE 8080
 
 # Run Flask app with Gunicorn
-CMD ["gunicorn", "-bind", "0.0.0.0:8080", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
